@@ -1,46 +1,5 @@
-name:  Android APK
-on:
-  push:
-    branches: [ main ]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Unzip project
-        run: |
-          if [ -f "Layihe.zip" ]; then
-            unzip -o Layihe.zip
-          elif [ -f "Orxan-main.zip" ]; then
-            unzip -o Orxan-main.zip
-          else
-            echo "XETA: ZIP fayli tapilmadi!"
-            ls -R
-            exit 1
-          fi
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: gradle
-
-      - name: Build with Gradle
-        run: |
-          GRADLEW_PATH=$(find . -name "gradlew" | head -n 1)
-          if [ -z "$GRADLEW_PATH" ]; then
-            echo "XETA: gradlew tapilmadi!"
-            exit 1
-          fi
-          chmod +x "$GRADLEW_PATH"
-          cd $(dirname "$GRADLEW_PATH")
-          ./gradlew assembleDebug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug
-          path: "**/build/outputs/apk/debug/*.apk"
+# Build outputs
+*.apk
+*.aar
+build/
+.build-outputs/
