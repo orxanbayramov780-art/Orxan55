@@ -9,8 +9,9 @@ jobs:
 
       - name: Unzip project
         run: |
-          unzip -q Orxan-main.zip -d extracted_files
-          find extracted_files -maxdepth 2 -name "gradlew"
+          unzip -o Layihe.zip
+          echo "Dosyalar kontrol ediliyor:"
+          find . -maxdepth 3 -name "gradlew"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -21,8 +22,10 @@ jobs:
 
       - name: Build with Gradle
         run: |
-          cd extracted_files/* || cd extracted_files
-          chmod +x gradlew
+          GRADLEW_PATH=$(find . -name "gradlew" | head -n 1)
+          if [ -z "$GRADLEW_PATH" ]; then echo "HATA: gradlew tapilmadi!"; exit 1; fi
+          chmod +x "$GRADLEW_PATH"
+          cd $(dirname "$GRADLEW_PATH")
           ./gradlew assembleDebug
 
       - name: Upload APK
