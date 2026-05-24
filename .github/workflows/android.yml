@@ -1,5 +1,7 @@
 name: Build Android APK
-on: [push]
+on:
+  push:
+    branches: [ main ]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -9,9 +11,15 @@ jobs:
 
       - name: Unzip project
         run: |
-          unzip -o Layihe.zip
-          echo "Dosyalar kontrol ediliyor:"
-          find . -maxdepth 3 -name "gradlew"
+          if [ -f "Layihe.zip" ]; then
+            unzip -o Layihe.zip
+          elif [ -f "Orxan-main.zip" ]; then
+            unzip -o Orxan-main.zip
+          else
+            echo "XETA: ZIP fayli tapilmadi!"
+            ls -R
+            exit 1
+          fi
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -23,7 +31,10 @@ jobs:
       - name: Build with Gradle
         run: |
           GRADLEW_PATH=$(find . -name "gradlew" | head -n 1)
-          if [ -z "$GRADLEW_PATH" ]; then echo "HATA: gradlew tapilmadi!"; exit 1; fi
+          if [ -z "$GRADLEW_PATH" ]; then
+            echo "XETA: gradlew tapilmadi!"
+            exit 1
+          fi
           chmod +x "$GRADLEW_PATH"
           cd $(dirname "$GRADLEW_PATH")
           ./gradlew assembleDebug
